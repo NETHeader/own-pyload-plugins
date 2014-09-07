@@ -28,13 +28,13 @@ class SxrCom(Crypter):
         # Init
         self.pyfile = pyfile
         self.package = pyfile.package()
-
-        # Get package links
+        # Decrypt links
         (package_name, package_links, folder_name, package_pwd) = self.decryptLinks(self.pyfile.url)
         if package_pwd:
-            self.pyfile.package().password = package_pwd        
+            self.pyfile.package().password = package_pwd
+        # Add new links    
         self.packages.append((package_name, package_links, folder_name))
-        
+
     def decryptLinks(self, url):
         linklist = []
         name = self.package.name
@@ -47,11 +47,13 @@ class SxrCom(Crypter):
             links = re.findall(self.PATTERN_DL_LINK_PAGE, html)
             for link in links:
                 linklist.append("http://sexuria.com/v1/" + link)
+
         elif re.match(self.PATTERN_SUPPORTED_REDIRECT, url):
             # Processing direct redirect link (out.php), redirecting to main page
             id = re.search(self.PATTERN_SUPPORTED_REDIRECT, url).group('id')
             if id:
                 linklist.append("http://sexuria.com/v1/Pornos_Kostenlos_liebe_" + id + ".html")
+
         elif re.match(self.PATTERN_SUPPORTED_CRYPT, url):
             # Extract info from main file
             id = re.search(self.PATTERN_SUPPORTED_CRYPT, url).group('id')
@@ -78,13 +80,14 @@ class SxrCom(Crypter):
                     else:
                         linklist.append(finallink)
 
-        # Inform the user if no link could been extracted
+        # Inform the user if no link could have been extracted
         if linklist == []:
             self.fail("Could not extract any links (out of date?)")
-
+    
         # Debug log
         self.logDebug("SxrCom result: %d supported links" % len(linklist))
         for i, link in enumerate(linklist):
             self.logDebug("Supported link %d, %s" % (i+1, link))
 
+        # Done, return to caller    
         return name, linklist, folder, password
