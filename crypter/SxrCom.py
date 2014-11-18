@@ -7,7 +7,7 @@ class SxrCom(Crypter):
     __name__ = "SxrCom"
     __type__ = "crypter"
     __pattern__ = r"http://(www\.)?sexuria\.com/(v1/)?Pornos_Kostenlos_.+?_(\d+)\.html|http://(www\.)?sexuria\.com/(v1/)?dl_links_\d+_\d+\.html|http://(www\.)?sexuria\.com/out\.php\?id=(\d+)\&part=\d+\&link=\d+"
-    __version__ = "0.5"
+    __version__ = "0.6"
     __description__ = """Sexuria.com Crypter Plugin"""
     __author_name__ = ("NETHead")
     __author_mail__ = ("NETHead.AT.gmx.DOT.net")
