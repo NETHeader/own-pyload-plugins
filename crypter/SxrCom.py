@@ -70,13 +70,13 @@ class SxrCom(Crypter):
             html = self.load(url)
             links = re.findall(self.PATTERN_REDIRECT_LINKS, html)
             if len(links) == 0:
-                self.LogError("Decrypter SxrCom broken for link %s" % link)
+                self.fail("Decrypter SxrCom broken for link %s" % link)
             else:
                 for link in links:
                     link = link.replace("http://sexuria.com/", "http://www.sexuria.com/")
                     finallink = self.load(link, just_header = True)['location']
                     if (finallink == None) or ("sexuria.com/" in finallink):
-                        self.LogError("Decrypter SxrCom broken for link %s" % link)
+                        self.fail("Decrypter SxrCom broken for link %s" % link)
                     else:
                         linklist.append(finallink)
 
