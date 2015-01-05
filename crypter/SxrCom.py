@@ -76,7 +76,7 @@ class SxrCom(Crypter):
                     link = link.replace("http://sexuria.com/", "http://www.sexuria.com/")
                     finallink = self.load(link, just_header = True)['location']
                     if (finallink == None) or ("sexuria.com/" in finallink):
-                        self.fail("Decrypter SxrCom broken for link %s" % link)
+                        self.logInfo("Decrypter SxrCom broken for link %s" % link)
                     else:
                         linklist.append(finallink)
 
