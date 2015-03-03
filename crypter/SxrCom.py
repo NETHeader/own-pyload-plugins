@@ -7,10 +7,12 @@ class SxrCom(Crypter):
     __name__ = "SxrCom"
     __type__ = "crypter"
     __pattern__ = r"http://(www\.)?sexuria\.com/(v1/)?Pornos_Kostenlos_.+?_(\d+)\.html|http://(www\.)?sexuria\.com/(v1/)?dl_links_\d+_\d+\.html|http://(www\.)?sexuria\.com/out\.php\?id=(\d+)\&part=\d+\&link=\d+"
-    __version__ = "0.6"
-    __description__ = """Sexuria.com Crypter Plugin"""
-    __author_name__ = ("NETHead")
-    __author_mail__ = ("NETHead.AT.gmx.DOT.net")
+    __version__ = "0.07"
+    __config__  = [("use_subfolder", "bool", "Save package to subfolder", True),
+                   ("subfolder_per_package", "bool", "Create a subfolder for each package", True)]
+    __description__ = """Sexuria.com decrypter plugin"""
+    __license__     = "GPLv3"
+    __authors__     = [("NETHead", "NETHead.AT.gmx.DOT.net")]
 
     # Constants
     PATTERN_SUPPORTED_MAIN     = re.compile(r'http://(www\.)?sexuria\.com/(v1/)?Pornos_Kostenlos_.+?_(\d+)\.html', flags=re.IGNORECASE)
@@ -25,7 +27,7 @@ class SxrCom(Crypter):
         self.html = None
 
     def decrypt(self, pyfile):
-        # Init
+        # Initialize
         self.pyfile = pyfile
         self.package = pyfile.package()
         # Decrypt links
@@ -82,7 +84,7 @@ class SxrCom(Crypter):
 
         # Inform the user if no link could have been extracted
         if linklist == []:
-            self.fail("Could not extract any links (out of date?)")
+            self.fail("SxrCom could not extract any links (out of date?)")
     
         # Debug log
         self.logDebug("SxrCom result: %d supported links" % len(linklist))
