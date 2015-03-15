@@ -21,7 +21,7 @@ class NotifyGrowl(Hook):
 
     __description__ = """Send notifications to Growl"""
     __license__     = "GPLv3"
-    __authors__     = [("Jochen Oberreiter", "NETHead@gmx.net")]
+    __authors__     = [("Jochen Oberreiter", "NETHead (AT) gmx.net")]
 
     #@TODO: Remove in 0.4.10
     def initPeriodical(self):
