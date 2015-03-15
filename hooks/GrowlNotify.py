@@ -10,8 +10,7 @@ class NotifyGrowl(Hook):
     __type__    = "hook"
     __version__ = "0.01"
 
-    __config__ = [("enabled"        , "bool", "Enabled/Active", True),
-                  ("hostname"       , "str" , "Hostname", "localhost"),
+    __config__ = [("hostname"       , "str" , "Hostname", "localhost"),
                   ("password"       , "str" , "Password", ""),
                   ("notifycaptcha"  , "bool", "Notify captcha request", True),
                   ("notifypackage"  , "bool", "Notify package finished", True),
@@ -35,9 +34,6 @@ class NotifyGrowl(Hook):
 
 
     def newCaptchaTask(self, task):
-        if not self.getConfig("enabled"):
-            return False
-
         if not self.getConfig("notifycaptcha"):
             return False
         
@@ -48,17 +44,11 @@ class NotifyGrowl(Hook):
 
 
     def packageFinished(self, pypack):
-        if not self.getConfig("enabled"):
-            return False
-
         if self.getConfig("notifypackage"):
             self.notify("Package", _("Package finished"), pypack.name)
 
 
     def allDownloadsProcessed(self):
-        if not self.getConfig("enabled"):
-            return False
-
         if not self.getConfig("notifyprocessed"):
             return False
 
