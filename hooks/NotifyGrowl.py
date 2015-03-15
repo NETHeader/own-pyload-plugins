@@ -8,10 +8,11 @@ from module.plugins.Hook import Hook
 class NotifyGrowl(Hook):
     __name__    = "NotifyGrowl"
     __type__    = "hook"
-    __version__ = "0.03"
+    __version__ = "0.04"
 
     __config__ = [("hostname"       , "str" , "Hostname", "localhost"),
                   ("password"       , "str" , "Password", ""),
+                  ("port"           , "int" , "Port", 23053),
                   ("notifycaptcha"  , "bool", "Notify captcha request", True),
                   ("notifypackage"  , "bool", "Notify package finished", True),
                   ("notifyprocessed", "bool", "Notify processed packages status", True),
@@ -25,6 +26,7 @@ class NotifyGrowl(Hook):
     __authors__     = [("Jochen Oberreiter", "NETHead (AT) gmx.net")]
     
     event_list = ["allDownloadsProcessed"]
+    LOGO_FILE  = '/usr/share/pyload/icons/logo.png'
 
     #@TODO: Remove in 0.4.10
     def initPeriodical(self):
@@ -62,12 +64,29 @@ class NotifyGrowl(Hook):
             self.notify("Downloads finished", _("All packages finished"))
 
 
+    def loadLogo(self, uri):
+        self.LogDebug("NotifyGrowl: logo = %s" % uri)        
+        
+        if uri.startswith("http"):
+            image = uri
+        else:
+            try:
+                image = open(uri, 'rb').read()
+            except:
+                image = None
+                self.logInfo("NotifyGrowl: logo not found, skipping it")
+
+        return image
+
+
     def register(self):
         growl = gntp.notifier.GrowlNotifier(applicationName = "Pyload",
                                             notifications = ["Captcha waiting", "Package finished", "Downloads finished"],
                                             defaultNotifications = ["Captcha waiting", "Package finished", "Downloads finished"],
+                                            applicationIcon = self.loadLogo(LOGO_FILE),
                                             hostname = self.getConfig("hostname"), # Defaults to localhost
-                                            password = self.getConfig("password")  # Defaults to a blank password
+                                            password = self.getConfig("password"), # Defaults to a blank password
+                                            port = self.getConfig("port")          # Defaults to 23053
                                             )
         if growl:
             growl.register()
@@ -87,18 +106,11 @@ class NotifyGrowl(Hook):
             prio = -1
             self.logInfo("NotifyGrowl: priority out of range, use default. Check plugin config.")
 
-        # Load image
-        try:
-            image = open('/usr/share/pyload/icons/logo.png', 'rb').read()
-        except:
-            image = None
-            self.logInfo("NotifyGrowl: pyload logo not found, so skip it")
-          
         # Send notification  
         self.growl.notify(noteType = type,
                         title = event,
                         description = msg,
-                        icon = image,
+                        icon = self.loadLogo(LOGO_FILE),
                         sticky = self.getConfig("displaysticky"),
                         priority = prio)
         
