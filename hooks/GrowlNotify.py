@@ -10,14 +10,14 @@ class NotifyGrowl(Hook):
     __type__    = "hook"
     __version__ = "0.01"
 
-    __config__ = [("enabled"        , "bool", "Enabled/Active", True)
-		  ("hostname"       , "str" , "Hostname", "localhost"),
-		  ("password"       , "str" , "Password", ""),
+    __config__ = [("enabled"        , "bool", "Enabled/Active", True),
+		          ("hostname"       , "str" , "Hostname", "localhost"),
+		          ("password"       , "str" , "Password", ""),
                   ("notifycaptcha"  , "bool", "Notify captcha request", True),
                   ("notifypackage"  , "bool", "Notify package finished", True),
                   ("notifyprocessed", "bool", "Notify processed packages status", True),
                   ("timeout"        , "int" , "Timeout between captchas in seconds" , 5),
-                  ("force"          , "bool", "Send notifications even if web client is connected", False)]
+                  ("force"          , "bool", "Send notifications even if client is connected", True)]
 
     __description__ = """Send notifications to Growl"""
     __license__     = "GPLv3"
@@ -36,20 +36,20 @@ class NotifyGrowl(Hook):
 
     def newCaptchaTask(self, task):
         if not self.getConfig("enabled"):
-	    return false
+			return False
 
-	if not self.getConfig("notifycaptcha"):
-	    return false
-
-	if time() - self.last_notify < self.getConf("timeout"):
-		return False
+        if not self.getConfig("notifycaptcha"):
+			return False
+		
+		if (time() - self.last_notify) < self.getConf("timeout"):
+	    	return False
 
         self.notify("Captcha", _("Captcha"), _("New request waiting user input"), 1)
 
 
     def packageFinished(self, pypack):
         if not self.getConfig("enabled"):
-	    return false
+	        return False
 
         if self.getConfig("notifypackage"):
             self.notify("Package", _("Package finished"), pypack.name)
@@ -57,7 +57,7 @@ class NotifyGrowl(Hook):
 
     def allDownloadsProcessed(self):
         if not self.getConfig("enabled"):
-	    return false
+	        return False
 
         if not self.getConfig("notifyprocessed"):
             return False
@@ -69,26 +69,25 @@ class NotifyGrowl(Hook):
 
 
     def register(self):
-	growl = gntp.notifier.GrowlNotifier(applicationName = "Pyload",
-					    notifications = ["Captcha", "Package"],
-					    defaultNotifications = ["Captcha"],
-					    hostname = self.getConfig("hostname"), # Defaults to localhost
-					    password = self.getConfig("password") # Defaults to a blank password
-					    )
-	growl.register()
-	return growl
+		growl = gntp.notifier.GrowlNotifier(applicationName = "Pyload",
+											notifications = ["Captcha", "Package"],
+											defaultNotifications = ["Captcha"],
+											hostname = self.getConfig("hostname"), # Defaults to localhost
+											password = self.getConfig("password") # Defaults to a blank password
+											)
+		growl.register()
+		return growl
 
 
     def notify(self, type, event, msg="", prio=-1):
-
         if self.core.isClientConnected() and not self.getConfig("force"):
             return False
 
-	self.growl.notify(noteType = type,
-			  title = event,
-			  description = msg,
-			  #icon = "http://example.com/icon.png",
-			  sticky = False,
-			  priority = prio)
+		self.growl.notify(noteType = type,
+						title = event,
+						description = msg,
+						#icon = "http://example.com/icon.png",
+						sticky = False,
+						priority = prio)
 
-	self.last_notify = time()
+		self.last_notify = time()
