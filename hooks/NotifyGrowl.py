@@ -8,7 +8,7 @@ from module.plugins.Hook import Hook
 class NotifyGrowl(Hook):
     __name__    = "NotifyGrowl"
     __type__    = "hook"
-    __version__ = "0.01"
+    __version__ = "0.02"
 
     __config__ = [("hostname"       , "str" , "Hostname", "localhost"),
                   ("password"       , "str" , "Password", ""),
@@ -21,6 +21,8 @@ class NotifyGrowl(Hook):
     __description__ = """Send notifications to Growl"""
     __license__     = "GPLv3"
     __authors__     = [("Jochen Oberreiter", "NETHead (AT) gmx.net")]
+    
+    event_list = ["allDownloadsProcessed"]
 
     #@TODO: Remove in 0.4.10
     def initPeriodical(self):
@@ -40,12 +42,12 @@ class NotifyGrowl(Hook):
         if (time() - self.last_notify) < self.getConf("timeout"):
             return False
 
-        self.notify("Captcha", _("Captcha"), _("New request waiting user input"), 1)
+        self.notify("Captcha waiting", _("Captcha"), _("New request waiting user input"), 1)
 
 
     def packageFinished(self, pypack):
         if self.getConfig("notifypackage"):
-            self.notify("Package", _("Package finished"), pypack.name)
+            self.notify("Package finished", _("Package finished"), pypack.name)
 
 
     def allDownloadsProcessed(self):
@@ -53,17 +55,17 @@ class NotifyGrowl(Hook):
             return False
 
         if any(True for pdata in self.core.api.getQueue() if pdata.linksdone < pdata.linkstotal):
-            self.notify("Package", _("Package failed"), _("One or more packages was not completed successfully"))
+            self.notify("Downloads finished", _("Package failed"), _("One or more packages was not completed successfully"))
         else:
-            self.notify("Package", _("All packages finished"))
+            self.notify("Downloads finished", _("All packages finished"))
 
 
     def register(self):
         growl = gntp.notifier.GrowlNotifier(applicationName = "Pyload",
-                                            notifications = ["Captcha", "Package"],
-                                            defaultNotifications = ["Captcha"],
+                                            notifications = ["Captcha waiting", "Package finished", "Downloads finished"],
+                                            defaultNotifications = ["Captcha waiting", "Package finished", "Downloads finished"],
                                             hostname = self.getConfig("hostname"), # Defaults to localhost
-                                            password = self.getConfig("password") # Defaults to a blank password
+                                            password = self.getConfig("password")  # Defaults to a blank password
                                             )
         growl.register()
         return growl
@@ -73,11 +75,16 @@ class NotifyGrowl(Hook):
         if self.core.isClientConnected() and not self.getConfig("force"):
             return False
 
+        try:
+            image = open('/usr/share/pyload/icons/logo.png', 'rb').read()
+        except:
+            image = None
+            
         self.growl.notify(noteType = type,
                         title = event,
                         description = msg,
-                        #icon = "http://example.com/icon.png",
+                        icon = image,
                         sticky = False,
                         priority = prio)
-
+        
         self.last_notify = time()
