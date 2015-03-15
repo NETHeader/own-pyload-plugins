@@ -67,8 +67,12 @@ class NotifyGrowl(Hook):
                                             hostname = self.getConfig("hostname"), # Defaults to localhost
                                             password = self.getConfig("password")  # Defaults to a blank password
                                             )
-        growl.register()
-        return growl
+        if growl:
+            growl.register()
+            return growl
+        else:
+            self.logError("NotifyGrowl: Could not register pyload at host '%s'" % self.getConfig("hostname"), e)
+            return None
 
 
     def notify(self, type, event, msg="", prio=-1):
@@ -79,6 +83,7 @@ class NotifyGrowl(Hook):
             image = open('/usr/share/pyload/icons/logo.png', 'rb').read()
         except:
             image = None
+            self.logInfo("NotifyGrowl: Pyload logo not found, skipping it")
             
         self.growl.notify(noteType = type,
                         title = event,
