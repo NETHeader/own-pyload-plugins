@@ -8,7 +8,7 @@ from module.plugins.Hook import Hook
 class NotifyGrowl(Hook):
     __name__    = "NotifyGrowl"
     __type__    = "hook"
-    __version__ = "0.02"
+    __version__ = "0.03"
 
     __config__ = [("hostname"       , "str" , "Hostname", "localhost"),
                   ("password"       , "str" , "Password", ""),
@@ -16,6 +16,8 @@ class NotifyGrowl(Hook):
                   ("notifypackage"  , "bool", "Notify package finished", True),
                   ("notifyprocessed", "bool", "Notify processed packages status", True),
                   ("timeout"        , "int" , "Timeout between captchas in seconds" , 5),
+                  ("displaysticky"  , "bool", "Display notifications sticky", False),
+                  ("displaypriority", "int" , "Display priority, range -2(very low) to 2(emergency)" , -1),
                   ("force"          , "bool", "Send notifications even if client is connected", True)]
 
     __description__ = """Send notifications to Growl"""
@@ -75,21 +77,29 @@ class NotifyGrowl(Hook):
             return None
 
 
-    def notify(self, type, event, msg="", prio=-1):
+    def notify(self, type, event, msg=""):
         if self.core.isClientConnected() and not self.getConfig("force"):
             return False
 
+        # Check priority
+        prio = self.getConfig("displaypriority")
+        if prio < -2 or prio > 2:
+            prio = -1
+            self.logInfo("NotifyGrowl: priority out of range, use default. Check plugin config.")
+
+        # Load image
         try:
             image = open('/usr/share/pyload/icons/logo.png', 'rb').read()
         except:
             image = None
-            self.logInfo("NotifyGrowl: Pyload logo not found, skipping it")
-            
+            self.logInfo("NotifyGrowl: pyload logo not found, so skip it")
+          
+        # Send notification  
         self.growl.notify(noteType = type,
                         title = event,
                         description = msg,
                         icon = image,
-                        sticky = False,
+                        sticky = self.getConfig("displaysticky"),
                         priority = prio)
         
         self.last_notify = time()
