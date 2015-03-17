@@ -11,7 +11,7 @@ class NotifyGrowl(Hook):
     __version__ = "0.06"
     __description__ = """Send notifications to Growl"""
     __license__     = "GPLv3"
-    __authors__     = [("Jochen Oberreiter", "NETHead (AT) gmx.net")]
+    __authors__     = [("NETHeader", "NETHead (AT) gmx.net")]
 
     __config__  = [("hostname"       , "str" , "Hostname", "localhost"),
                   ("password"       , "str" , "Password", ""),
