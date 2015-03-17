@@ -8,7 +8,7 @@ from module.plugins.Hook import Hook
 class NotifyGrowl(Hook):
     __name__    = "NotifyGrowl"
     __type__    = "hook"
-    __version__ = "0.04"
+    __version__ = "0.05"
 
     __config__ = [("hostname"       , "str" , "Hostname", "localhost"),
                   ("password"       , "str" , "Password", ""),
@@ -46,7 +46,7 @@ class NotifyGrowl(Hook):
         if (time() - self.last_notify) < self.getConf("timeout"):
             return False
 
-        self.notify("Captcha waiting", _("Captcha"), _("New request waiting user input"), 1)
+        self.notify("Captcha waiting", _("Captcha"), _("New request waiting user input"))
 
 
     def packageFinished(self, pypack):
