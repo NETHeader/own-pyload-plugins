@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import gntp.notifier    # Growl Network Transport Protocol Implementation
-import socket           # IP adress determination
 
 from time import time
 from module.plugins.Hook import Hook
