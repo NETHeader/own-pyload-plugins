@@ -15,7 +15,7 @@ class NotifyGNTP(Hook):
     __license__     = "GPLv3"
     __authors__     = [("NETHeader", "NETHead (AT) gmx.net")]
 
-    __config__ = [("hostname"      , "str" , "Hostname", "localhost"),
+    __config__ = [("hostname"      , "str" , "Hostname", "127.0.0.1"),
                   ("password"       , "str" , "Password", ""),
                   ("port"           , "int" , "Port", 23053),
                   ("notifycaptcha"  , "bool", "Notify captcha request", True),
