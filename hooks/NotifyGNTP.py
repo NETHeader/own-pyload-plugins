@@ -2,7 +2,7 @@
 
 import gntp.notifier    # Growl Network Transport Protocol Implementation
 import socket           # for IP address determination
-import os               # for loading of the pyload logo 
+import os               # for loading of the pyLoad logo 
 
 from time import time
 from module.plugins.Hook import Hook
@@ -98,7 +98,7 @@ class NotifyGNTP(Hook):
 
 
     def register(self):
-        growl = gntp.notifier.GrowlNotifier(applicationName = "Pyload",
+        growl = gntp.notifier.GrowlNotifier(applicationName = "pyLoad",
                                             notifications = ["Captcha waiting", "Package finished", "Downloads finished"],
                                             defaultNotifications = ["Captcha waiting", "Package finished", "Downloads finished"],
                                             applicationIcon = self.loadLogo(self.LOGO_PATH),
