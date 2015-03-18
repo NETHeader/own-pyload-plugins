@@ -11,7 +11,7 @@ class NotifyGNTP(Hook):
     __name__    = "NotifyGNTP"
     __type__    = "hook"
     __version__ = "0.01"
-    __description__ = """Send notifications to Growl & Snarl over GNTP"""
+    __description__ = """Send notifications to Growl & Snarl (GNTP)"""
     __license__     = "GPLv3"
     __authors__     = [("NETHeader", "NETHead (AT) gmx.net")]
 
@@ -94,7 +94,7 @@ class NotifyGNTP(Hook):
                 image = open(uri, 'rb').read()
             except:
                 image = None
-                self.logInfo("NotifyGNTP: Application logo not found, skipping it")
+                self.logInfo("Application logo not found, skipping it")
         return image
 
 
