@@ -11,7 +11,7 @@ class NotifyGNTP(Hook):
     __name__    = "NotifyGNTP"
     __type__    = "hook"
     __version__ = "0.01"
-    __description__ = """Send notifications to Growl & Snarl (GNTP)"""
+    __description__ = """Send notifications to Growl & Snarl via GNTP"""
     __license__     = "GPLv3"
     __authors__     = [("NETHeader", "NETHead (AT) gmx.net")]
 
