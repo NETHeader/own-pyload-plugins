@@ -38,7 +38,7 @@ class NotifyGNTP(Hook):
         self.info  = {}  #@TODO: Remove in 0.4.10
         self.last_notify = 0
 
-        # Register at growl server
+        # Register at remote host
         self.growl = self.register()
         if not self.growl:
             self.fail("Could not register at host '%s:%d'" % (self.getConfig("hostname"), self.getConfig("port")))
@@ -62,10 +62,9 @@ class NotifyGNTP(Hook):
         if (time() - self.last_notify) < self.getConf("timeout"):
             return False
         
-        try:
-            if self.config['webinterface']['activated']:
-                self.notify("Captcha waiting", _("Captcha"), _("New request waiting user input"), "http://%s:%d" % (self.webip, self.webport))
-        except:
+        if self.config['webinterface']['activated']:
+            self.notify("Captcha waiting", _("Captcha"), _("New request waiting user input"), "http://%s:%d" % (self.webip, self.webport))
+        else:
             self.notify("Captcha waiting", _("Captcha"), _("New request waiting user input"))
 
 
