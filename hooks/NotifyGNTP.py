@@ -2,15 +2,16 @@
 
 import gntp.notifier    # Growl Network Transport Protocol Implementation
 import socket           # for IP address determination
+import os               # for loading of the pyload logo 
 
 from time import time
 from module.plugins.Hook import Hook
 
-class NotifyGrowl(Hook):
-    __name__    = "NotifyGrowl"
+class NotifyGNTP(Hook):
+    __name__    = "NotifyGNTP"
     __type__    = "hook"
-    __version__ = "0.07"
-    __description__ = """Send notifications to Growl"""
+    __version__ = "0.01"
+    __description__ = """Send notifications to Growl & Snarl over GNTP"""
     __license__     = "GPLv3"
     __authors__     = [("NETHeader", "NETHead (AT) gmx.net")]
 
@@ -49,7 +50,9 @@ class NotifyGrowl(Hook):
             self.webip = socket.gethostbyname(socket.gethostname())
             self.webport = self.config['webinterface']['port']
             self.logInfo("Callback URI is 'http://%s:%d'" % (self.webip, self.webport))
-
+            
+        self.logInfo("path = %s" % os.path.dirname(os.path.abspath(__file__)))
+        self.logInfo("path = %s" % os.getcwd())
         
     def newCaptchaTask(self, task):
         if not self.getConfig("notifycaptcha"):
@@ -91,7 +94,7 @@ class NotifyGrowl(Hook):
                 image = open(uri, 'rb').read()
             except:
                 image = None
-                self.logInfo("NotifyGrowl: Application logo not found, skipping it")
+                self.logInfo("NotifyGNTP: Application logo not found, skipping it")
         return image
 
 
@@ -114,7 +117,7 @@ class NotifyGrowl(Hook):
 
         # Check priority
         prio = self.getConfig("displaypriority")
-        if prio < -2 or prio > 2:
+        if not (-2 <= prio <= 2):
             prio = -1
             self.logWarning("Priority out of range, check plugin config")
 
