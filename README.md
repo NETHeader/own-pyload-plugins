@@ -1,11 +1,9 @@
-own-pyload-modules
-==================
-
-My own pyload modules:
-- crypter/Sxr.Com (Sexuria Crypter)
-- hooks/NotifyGNTP (Send Notifications to Growl or Snarl (via GNTP))
-  This plugin send notifications to Growl or Snarl, e.g. captcha waiting, download finish, etc.
-  Requires [url=https://github.com/kfdm/gntp]gntp[/url].
-  Easy install with pip:
+#own-pyload-modules
+Miscellaneous pyload modules:
+- hooks/**NotifyGNTP** (Send Notifications to Growl or Snarl)<br/>
+  This plugin sends notifications (captcha waiting, download finish, etc.) to Growl or Snarl via socket based [GNT protocol](http://www.growlforwindows.com/gfw/help/gntp.aspx). Requires python package [ gntp](https://github.com/kfdm/gntp); simple download and install it or use the automatic package management tool 'pip' by typing
+  ```
   pip install gntp
-
+  ```
+  on a shell terminal.
+- crypter/**SexuriaCom** (Sexuria Crypter)
