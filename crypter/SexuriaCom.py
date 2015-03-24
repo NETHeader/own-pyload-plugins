@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
-from module.plugins.Crypter import Crypter
 import re
 
-class SxrCom(Crypter):
-    __name__ = "SxrCom"
-    __type__ = "crypter"
-    __version__ = "0.07"
-    __pattern__ = r"http://(www\.)?sexuria\.com/(v1/)?Pornos_Kostenlos_.+?_(\d+)\.html|http://(www\.)?sexuria\.com/(v1/)?dl_links_\d+_\d+\.html|http://(www\.)?sexuria\.com/out\.php\?id=(\d+)\&part=\d+\&link=\d+"    
-    __config__  = [("use_subfolder", "bool", "Save package to subfolder", True),
-                   ("subfolder_per_package", "bool", "Create a subfolder for each package", True)]
+from module.plugins.Crypter import Crypter
+
+class SexuriaCom(Crypter):
+    __name__    = "SexuriaCom"
+    __type__    = "crypter"
+    __version__ = "0.05"
     __description__ = """Sexuria.com decrypter plugin"""
-    __license__     = "GPLv3"
-    __authors__     = [("NETHead", "NETHead.AT.gmx.DOT.net")]
+    __license__ = "GPLv3"
+    __authors__ = [("NETHead", "NETHead.AT.gmx.DOT.net")]
+    __pattern__ = r'http://(?:www\.)?sexuria\.com/(v1/)?(Pornos_Kostenlos_.+?_(\d+)\.html|dl_links_\d+_\d+\.html|id=\d+\&part=\d+\&link=\d+)'
+    __config__  = [("use_subfolder", "bool", "Save package to subfolder", True),
+                  ("subfolder_per_package", "bool", "Create a subfolder for each package", True)]
 
     # Constants
     PATTERN_SUPPORTED_MAIN     = re.compile(r'http://(www\.)?sexuria\.com/(v1/)?Pornos_Kostenlos_.+?_(\d+)\.html', flags=re.IGNORECASE)
@@ -23,19 +24,18 @@ class SxrCom(Crypter):
     PATTERN_DL_LINK_PAGE       = re.compile(r'"(dl_links_\d+_\d+\.html)"', flags=re.IGNORECASE)
     PATTERN_REDIRECT_LINKS     = re.compile(r'value="(http://sexuria\.com/out\.php\?id=\d+\&part=\d+\&link=\d+)" readonly', flags=re.IGNORECASE)
 
-    def setup(self):
-        self.html = None
 
     def decrypt(self, pyfile):
-        # Initialize
+        # Init
         self.pyfile = pyfile
         self.package = pyfile.package()
-        # Decrypt links
-        (package_name, package_links, folder_name, package_pwd) = self.decryptLinks(self.pyfile.url)
+
+        # Decrypt and add links
+        package_name, self.links, folder_name, package_pwd = self.decryptLinks(self.pyfile.url)
         if package_pwd:
             self.pyfile.package().password = package_pwd
-        # Add new links    
-        self.packages.append((package_name, package_links, folder_name))
+        self.packages = [(package_name, self.links, folder_name)]
+
 
     def decryptLinks(self, url):
         linklist = []
@@ -72,24 +72,24 @@ class SxrCom(Crypter):
             html = self.load(url)
             links = re.findall(self.PATTERN_REDIRECT_LINKS, html)
             if len(links) == 0:
-                self.fail("Decrypter SxrCom broken for link %s" % link)
+                self.LogError("Decrypter SxrCom broken for link %s" % link)
             else:
                 for link in links:
                     link = link.replace("http://sexuria.com/", "http://www.sexuria.com/")
                     finallink = self.load(link, just_header = True)['location']
                     if (finallink == None) or ("sexuria.com/" in finallink):
-                        self.logInfo("Decrypter SxrCom broken for link %s" % link)
+                        self.LogError("Decrypter SxrCom broken for link %s" % link)
                     else:
                         linklist.append(finallink)
 
         # Inform the user if no link could have been extracted
         if linklist == []:
-            self.fail("SxrCom could not extract any links (out of date?)")
-    
+            self.fail("Could not extract any links (out of date?)")
+
         # Debug log
         self.logDebug("SxrCom result: %d supported links" % len(linklist))
         for i, link in enumerate(linklist):
             self.logDebug("Supported link %d, %s" % (i+1, link))
 
-        # Done, return to caller    
+        # Done, return to caller
         return name, linklist, folder, password
