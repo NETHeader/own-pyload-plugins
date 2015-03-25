@@ -72,13 +72,13 @@ class SexuriaCom(Crypter):
             html = self.load(url)
             links = re.findall(self.PATTERN_REDIRECT_LINKS, html)
             if len(links) == 0:
-                self.LogError("Decrypter SxrCom broken for link %s" % link)
+                self.LogError("Plugin broken for link %s" % link)
             else:
                 for link in links:
                     link = link.replace("http://sexuria.com/", "http://www.sexuria.com/")
                     finallink = self.load(link, just_header = True)['location']
                     if (finallink == None) or ("sexuria.com/" in finallink):
-                        self.LogError("Decrypter SxrCom broken for link %s" % link)
+                        self.LogError("Plugin broken for link %s" % link)
                     else:
                         linklist.append(finallink)
 
@@ -87,7 +87,7 @@ class SexuriaCom(Crypter):
             self.fail("Could not extract any links (out of date?)")
 
         # Debug log
-        self.logDebug("SxrCom result: %d supported links" % len(linklist))
+        self.logDebug("Result: %d supported links" % len(linklist))
         for i, link in enumerate(linklist):
             self.logDebug("Supported link %d, %s" % (i+1, link))
 
