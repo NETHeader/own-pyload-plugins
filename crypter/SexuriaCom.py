@@ -65,7 +65,7 @@ class SexuriaCom(Crypter):
                 name = folder = title
                 self.logDebug("Package info found, name [%s] and folder [%s]" % (name, folder))
             pwd = re.search(self.PATTERN_PASSWORD, html).group('pwd')
-            if pwd:
+            if pwd and pwd != "Kein Passwort":
                 password = pwd.strip()
                 self.logDebug("Password info [%s] found" % password)
             # Process link (dl_link)
