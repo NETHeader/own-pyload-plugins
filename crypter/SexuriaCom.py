@@ -7,7 +7,7 @@ from module.plugins.Crypter import Crypter
 class SexuriaCom(Crypter):
     __name__    = "SexuriaCom"
     __type__    = "crypter"
-    __version__ = "0.05"
+    __version__ = "0.06"
     __description__ = """Sexuria.com decrypter plugin"""
     __license__ = "GPLv3"
     __authors__ = [("NETHead", "NETHead.AT.gmx.DOT.net")]
