@@ -6,5 +6,6 @@ Miscellaneous pyload modules:
   pip install gntp
   ```
   on a shell terminal.
+  
 - crypter/**SexuriaCom** (Sexuria Crypter)<br />
   A convienient way to download content from the adult site.
