@@ -2,7 +2,7 @@
 
 import gntp.notifier    # Growl Network Transport Protocol Implementation
 import socket           # for IP address determination
-import os               # for loading of the pyLoad logo 
+import os               # for loading of the pyLoad logo
 
 from time import time
 from module.plugins.Hook import Hook
@@ -10,7 +10,7 @@ from module.plugins.Hook import Hook
 class NotifyGNTP(Hook):
     __name__    = "NotifyGNTP"
     __type__    = "hook"
-    __version__ = "0.01"
+    __version__ = "0.02"
     __description__ = """Send notifications to Growl & Snarl via GNTP"""
     __license__     = "GPLv3"
     __authors__     = [("NETHeader", "NETHead (AT) gmx.net")]
@@ -25,7 +25,7 @@ class NotifyGNTP(Hook):
                   ("displaysticky"  , "bool", "Display notifications sticky", False),
                   ("displaypriority", "int" , "Display priority, range -2(very low) to 2(emergency)" , -1),
                   ("force"          , "bool", "Send notifications even if client is connected", True)]
-    
+
     event_list = ["allDownloadsProcessed"]
     LOGO_PATH = "/usr/share/pyload/icons/logo.png"
 
@@ -45,23 +45,24 @@ class NotifyGNTP(Hook):
         else:
             self.logInfo("Registered at host '%s:%d'" % (self.getConfig("hostname"), self.getConfig("port")))
 
-        # Determine callback URI 
+        # Determine callback URI
         if self.config['webinterface']['activated']:
             self.webip = socket.gethostbyname(socket.gethostname())
             self.webport = self.config['webinterface']['port']
             self.logInfo("Callback URI is 'http://%s:%d'" % (self.webip, self.webport))
-            
-        self.logInfo("path = %s" % os.path.dirname(os.path.abspath(__file__)))
-        self.logInfo("path = %s" % os.getcwd())
-        
+
+        self.logInfo("path pluginfile = %s" % os.path.dirname(os.path.abspath(__file__)))
+        self.logInfo("path workingdir = %s" % os.getcwd())
+
+
     def newCaptchaTask(self, task):
         if not self.getConfig("notifycaptcha"):
             return False
-        
+
         # Check timeout
         if (time() - self.last_notify) < self.getConf("timeout"):
             return False
-        
+
         if self.config['webinterface']['activated']:
             self.notify("Captcha waiting", _("Captcha"), _("New request waiting user input"), "http://%s:%d" % (self.webip, self.webport))
         else:
@@ -76,8 +77,8 @@ class NotifyGNTP(Hook):
     def allDownloadsProcessed(self):
         if not self.getConfig("notifyprocessed"):
             return False
-        
-        # Check queue on package status 
+
+        # Check queue on package status
         if any(True for pdata in self.core.api.getQueue() if pdata.linksdone < pdata.linkstotal):
             self.notify("Downloads finished", _("Package failed"), _("One or more packages was not completed successfully"))
         else:
@@ -85,7 +86,7 @@ class NotifyGNTP(Hook):
 
 
     def loadLogo(self, uri):
-        self.logDebug("logo=%s" % uri)        
+        self.logDebug("logo=%s" % uri)
         if uri.startswith("http"):
             image = uri
         else:
@@ -93,7 +94,7 @@ class NotifyGNTP(Hook):
                 image = open(uri, 'rb').read()
             except:
                 image = None
-                self.logInfo("Application logo not found, skipping it")
+                self.logInfo("Application logo not found at '%s', skipping it" % uri)
         return image
 
 
@@ -120,7 +121,7 @@ class NotifyGNTP(Hook):
             prio = -1
             self.logWarning("Priority out of range, check plugin config")
 
-        # Send notification  
+        # Send notification
         self.growl.notify(noteType = type,
                         title = event,
                         description = msg,
@@ -128,5 +129,5 @@ class NotifyGNTP(Hook):
                         icon = self.loadLogo(self.LOGO_PATH),
                         sticky = self.getConfig("displaysticky"),
                         priority = prio)
-        
+
         self.last_notify = time()
