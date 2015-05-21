@@ -7,7 +7,7 @@ from module.plugins.Crypter import Crypter
 class SexuriaCom(Crypter):
     __name__    = "SexuriaCom"
     __type__    = "crypter"
-    __version__ = "0.06"
+    __version__ = "0.07"
     __description__ = """Sexuria.com decrypter plugin"""
     __license__ = "GPLv3"
     __authors__ = [("NETHead", "NETHead.AT.gmx.DOT.net")]
@@ -65,7 +65,7 @@ class SexuriaCom(Crypter):
                 name = folder = title
                 self.logDebug("Package info found, name [%s] and folder [%s]" % (name, folder))
             pwd = re.search(self.PATTERN_PASSWORD, html).group('pwd')
-            if pwd and pwd != "Kein Passwort":
+            if pwd and pwd != "Kein Passwort" and pwd != "-":
                 password = pwd.strip()
                 self.logDebug("Password info [%s] found" % password)
             # Process link (dl_link)
