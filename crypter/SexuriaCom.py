@@ -23,7 +23,7 @@ class SexuriaCom(Crypter):
     PATTERN_PASSWORD           = re.compile(r'<strong>Passwort: </strong></div></td>.*?bgcolor="#EFEFEF">(?P<pwd>.*?)</td>', flags=re.IGNORECASE | re.DOTALL)
     PATTERN_DL_LINK_PAGE       = re.compile(r'"(dl_links_\d+_\d+\.html)"', flags=re.IGNORECASE)
     PATTERN_REDIRECT_LINKS     = re.compile(r'value="(http://sexuria\.com/out\.php\?id=\d+\&part=\d+\&link=\d+)" readonly', flags=re.IGNORECASE)
-
+    LIST_PWDIGNORE             = ["Kein Passwort", "-"]
 
     def decrypt(self, pyfile):
         # Init
@@ -65,7 +65,7 @@ class SexuriaCom(Crypter):
                 name = folder = title
                 self.logDebug("Package info found, name [%s] and folder [%s]" % (name, folder))
             pwd = re.search(self.PATTERN_PASSWORD, html).group('pwd')
-            if pwd and pwd != "Kein Passwort" and pwd != "-":
+            if pwd and not (pwd in self.LIST_PWDIGNORE):
                 password = pwd.strip()
                 self.logDebug("Password info [%s] found" % password)
             # Process link (dl_link)
