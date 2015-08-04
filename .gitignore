@@ -1,1 +1,5 @@
-/export2server.rexpfd
+# Eclipse
+.project
+.pydevproject
+.settings/
+*.rexpfd

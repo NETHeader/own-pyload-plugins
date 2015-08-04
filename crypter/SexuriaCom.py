@@ -7,7 +7,7 @@ from module.plugins.Crypter import Crypter
 class SexuriaCom(Crypter):
     __name__    = "SexuriaCom"
     __type__    = "crypter"
-    __version__ = "0.07"
+    __version__ = "0.08"
     __description__ = """Sexuria.com decrypter plugin"""
     __license__ = "GPLv3"
     __authors__ = [("NETHead", "NETHead.AT.gmx.DOT.net")]
@@ -84,12 +84,12 @@ class SexuriaCom(Crypter):
 
         # Inform the user if no link could have been extracted
         if linklist == []:
-            self.fail("Could not extract any links (out of date?)")
+            self.fail("Could not extract any links (maybe out of date?)")
 
         # Debug log
         self.logDebug("Result: %d supported links" % len(linklist))
         for i, link in enumerate(linklist):
-            self.logDebug("Supported link %d, %s" % (i+1, link))
+            self.logDebug("Supported link %d: %s" % (i+1, link))
 
         # Done, return to caller
         return name, linklist, folder, password
