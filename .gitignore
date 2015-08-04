@@ -1,5 +1,41 @@
-# Eclipse
+# General
+bin/
+tmp/
+*.tmp
+*.bak
+
+# Eclipse Core
+.metadata
 .project
-.pydevproject
 .settings/
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# Remote Export settings
 *.rexpfd
+
+# CDT-specific
+.cproject
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# Java annotation processor (APT)
+.factorypath
+
+# PDT-specific
+.buildpath
+
+# sbteclipse plugin
+.target
+
+# TeXlipse plugin
+.texlipse
+
+# PyDev plugin
+*.pydevproject
+*.pyc
