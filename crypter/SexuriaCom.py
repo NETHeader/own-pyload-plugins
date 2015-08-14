@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import re
-
-from module.plugins.Crypter import Crypter
+from module.plugins.internal.Crypter import Crypter
 
 class SexuriaCom(Crypter):
     __name__    = "SexuriaCom"
     __type__    = "crypter"
-    __version__ = "0.08"
+    __version__ = "0.09"
     __description__ = """Sexuria.com decrypter plugin"""
     __license__ = "GPLv3"
     __authors__ = [("NETHead", "NETHead.AT.gmx.DOT.net")]
