@@ -6,7 +6,7 @@ from module.plugins.internal.Crypter import Crypter
 class SexuriaCom(Crypter):
     __name__    = "SexuriaCom"
     __type__    = "crypter"
-    __version__ = "0.09"
+    __version__ = "0.10"
     __description__ = """Sexuria.com decrypter plugin"""
     __license__ = "GPLv3"
     __authors__ = [("NETHead", "NETHead.AT.gmx.DOT.net")]
@@ -62,33 +62,33 @@ class SexuriaCom(Crypter):
             title = re.search(self.PATTERN_TITLE, html).group('title').strip()
             if title:
                 name = folder = title
-                self.logDebug("Package info found, name [%s] and folder [%s]" % (name, folder))
+                self.log_debug("Package info found, name [%s] and folder [%s]" % (name, folder))
             pwd = re.search(self.PATTERN_PASSWORD, html).group('pwd')
             if pwd and not (pwd in self.LIST_PWDIGNORE):
                 password = pwd.strip()
-                self.logDebug("Password info [%s] found" % password)
+                self.log_debug("Password info [%s] found" % password)
+
             # Process link (dl_link)
             html = self.load(url)
             links = re.findall(self.PATTERN_REDIRECT_LINKS, html)
-            if len(links) == 0:
-                self.LogError("Plugin broken for link %s" % link)
+            if not links:
+                self.log_error(_("Broken for link: %s") % link)
             else:
                 for link in links:
                     link = link.replace("http://sexuria.com/", "http://www.sexuria.com/")
                     finallink = self.load(link, just_header = True)['location']
-                    if (finallink == None) or ("sexuria.com/" in finallink):
-                        self.LogError("Plugin broken for link %s" % link)
+                    if not finallink or ("sexuria.com/" in finallink):
+                        self.log_error(_("Broken for link: %s") % link)
                     else:
                         linklist.append(finallink)
 
-        # Inform the user if no link could have been extracted
-        if linklist == []:
-            self.fail("Could not extract any links (maybe out of date?)")
-
-        # Debug log
-        self.logDebug("Result: %d supported links" % len(linklist))
-        for i, link in enumerate(linklist):
-            self.logDebug("Supported link %d: %s" % (i+1, link))
+        # Log result
+        if not linklist:
+            self.fail(_("Unable to extract links (maybe plugin out of date?)"))
+        else:
+            self.log_debug("Result: %d supported links" % len(linklist))
+            for i, link in enumerate(linklist):
+                self.log_debug("Supported link %d: %s" % (i+1, link))
 
         # Done, return to caller
         return name, linklist, folder, password
