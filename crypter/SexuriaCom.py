@@ -6,7 +6,7 @@ from module.plugins.internal.Crypter import Crypter
 class SexuriaCom(Crypter):
     __name__    = "SexuriaCom"
     __type__    = "crypter"
-    __version__ = "0.10"
+    __version__ = "0.11"
     __status__  = "testing"
 
     __pattern__ = r'http://(?:www\.)?sexuria\.com/(v1/)?(Pornos_Kostenlos_.+?_(\d+)\.html|dl_links_\d+_\d+\.html|id=\d+\&part=\d+\&link=\d+)'
@@ -15,7 +15,7 @@ class SexuriaCom(Crypter):
 
     __description__ = """Sexuria.com decrypter plugin"""
     __license__     = "GPLv3"
-    __authors__     = [("NETHead", "NETHead.AT.gmx.DOT.net")]
+    __authors__     = [("NETHead", "NETHead-AT-gmx-DOT-net")]
 
     #: Constants
     PATTERN_SUPPORTED_MAIN     = r'http://(www\.)?sexuria\.com/(v1/)?Pornos_Kostenlos_.+?_(\d+)\.html'
@@ -62,6 +62,15 @@ class SexuriaCom(Crypter):
             #: Extract info from main file
             id = re.search(self.PATTERN_SUPPORTED_CRYPT, url, re.I).group('ID')
             html = self.load("http://sexuria.com/v1/Pornos_Kostenlos_info_%s.html" % id) #, decode=True
+            if not isinstance(html, unicode):
+                self.log_debug("Web source must be decoded!")
+                if "text/html; charset=iso-8859-1" in html:
+                    html = html.decode(encoding='iso-8859-1', errors='ignore')
+                else:
+                    if "text/html; charset=UTF-8" in html:
+                        html = html.decode(encoding='utf-8', errors='ignore')
+                    else:
+                        self.log_warning("Unknown encoding in html source")
             #: Webpage title / Package name
             titledata = re.search(self.PATTERN_TITLE, html, re.I)
             if not titledata:
