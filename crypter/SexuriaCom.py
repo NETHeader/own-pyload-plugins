@@ -6,12 +6,12 @@ from module.plugins.internal.Crypter import Crypter
 class SexuriaCom(Crypter):
     __name__    = "SexuriaCom"
     __type__    = "crypter"
-    __version__ = "0.11"
+    __version__ = "0.12"
     __status__  = "testing"
 
     __pattern__ = r'http://(?:www\.)?sexuria\.com/(v1/)?(Pornos_Kostenlos_.+?_(\d+)\.html|dl_links_\d+_\d+\.html|id=\d+\&part=\d+\&link=\d+)'
-    __config__  = [("use_subfolder",        "bool", "Save package to subfolder"          , True),
-                  ("subfolder_per_package", "bool", "Create a subfolder for each package", True)]
+    __config__  = [("use_subfolder",        "bool", "Save package to subfolder"          , False),
+                  ("subfolder_per_package", "bool", "Create a subfolder for each package", False)]
 
     __description__ = """Sexuria.com decrypter plugin"""
     __license__     = "GPLv3"
@@ -47,6 +47,7 @@ class SexuriaCom(Crypter):
 
         if re.match(self.PATTERN_SUPPORTED_MAIN, url, re.I):
             #: Processing main page
+            self.log_debug("Processing main link")
             html = self.load(url)
             links = re.findall(self.PATTERN_DL_LINK_PAGE, html, re.I)
             for link in links:
@@ -54,41 +55,39 @@ class SexuriaCom(Crypter):
 
         elif re.match(self.PATTERN_SUPPORTED_REDIRECT, url, re.I):
             #: Processing direct redirect link (out.php), redirecting to main page
+            self.log_debug("Processing redirect link")
             id = re.search(self.PATTERN_SUPPORTED_REDIRECT, url, re.I).group('ID')
             if id:
                 linklist.append("http://sexuria.com/v1/Pornos_Kostenlos_liebe_%s.html" % id)
 
         elif re.match(self.PATTERN_SUPPORTED_CRYPT, url, re.I):
             #: Extract info from main file
+            self.log_debug("Processing crypt link")
             id = re.search(self.PATTERN_SUPPORTED_CRYPT, url, re.I).group('ID')
-            html = self.load("http://sexuria.com/v1/Pornos_Kostenlos_info_%s.html" % id) #, decode=True
+            html = self.load("http://sexuria.com/v1/Pornos_Kostenlos_info_%s.html" % id)
             if not isinstance(html, unicode):
-                self.log_debug("Web source must be decoded!")
-                if "text/html; charset=iso-8859-1" in html:
-                    html = html.decode(encoding='iso-8859-1', errors='ignore')
-                else:
-                    if "text/html; charset=UTF-8" in html:
-                        html = html.decode(encoding='utf-8', errors='ignore')
-                    else:
-                        self.log_warning("Unknown encoding in html source")
+                html_encoding = re.search(r'content="text/html; charset=(?P<ENC>.+?)"', html, re.I)
+                if html_encoding:
+                    self.log_debug("Found HTML source encoding: %s" % html_encoding.group('ENC'))
+                    html = html.decode(encoding=html_encoding.group('ENC'), errors='ignore')
             #: Webpage title / Package name
             titledata = re.search(self.PATTERN_TITLE, html, re.I)
             if not titledata:
-                self.log_warning("No title data found, has site changed?")
+                self.log_warning(_("No title data found, maybe plugin outdated?"))
             else:
                 title = titledata.group('TITLE').strip()
                 if title:
                     name = folder = title
-                    self.log_debug("Package info found, name [%s] and folder [%s]" % (name, folder))
+                    self.log_debug("Package data found: name [%s] and folder [%s]" % (name, folder))
             #: Password
             pwddata = re.search(self.PATTERN_PASSWORD, html, re.I | re.S)
             if not pwddata:
-                self.log_warning("No password data found, has site changed?")
+                self.log_warning(_("No password data found, maybe plugin outdated?"))
             else:
                 pwd = pwddata.group('PWD').strip()
                 if pwd and not (pwd in self.LIST_PWDIGNORE):
                     password = pwd
-                    self.log_debug("Package info found, password [%s]" % password)
+                    self.log_debug("Package data found: password [%s]" % password)
 
             #: Process links (dl_link)
             html = self.load(url)
